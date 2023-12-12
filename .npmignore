@@ -1,0 +1,6 @@
+/.git*
+/.idea
+/src
+/node_modules
+/webpack*
+/yarn*
