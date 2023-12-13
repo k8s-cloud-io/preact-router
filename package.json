@@ -1,5 +1,5 @@
 {
-  "name": "@duskman72/preact-router",
+  "name": "@k8s-cloud-io/preact-router",
   "version": "1.0.46",
   "main": "dist/index.js",
   "license": "MIT",
