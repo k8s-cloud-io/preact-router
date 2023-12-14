@@ -1,5 +1,6 @@
 /dist
 /node_modules
-.idea
+/.parcel-cache
+/.idea
 /package-lock.json
 /yarn*

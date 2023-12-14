@@ -1,7 +1,7 @@
 import React from "react"
 import {BrowserHistory, createBrowserHistory} from "history";
-import {PropsWithChildren, createContext} from "react";
-import {useContext, useEffect, useState} from "react";
+import {PropsWithChildren, createContext} from "preact/compat";
+import {useContext, useEffect, useState} from "preact/compat";
 import classnames from "classnames";
 import {URLPattern} from "urlpattern-polyfill";
 
