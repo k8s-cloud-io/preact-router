@@ -1,6 +1,6 @@
 {
   "name": "@k8s-cloud-io/preact-router",
-  "version": "1.0.52",
+  "version": "1.0.61",
   "main": "dist/index.js",
   "source": "src/index.tsx",
   "types": "dist/index.d.ts",

@@ -31,28 +31,24 @@ export const useParams = () => {
     return r.params;
 }
 const RouteProvider = (props: PropsWithChildren) => {
-    //const [children, setChildren] = useState(props?.children);
     const [currentChild, setCurrentChild] = useState(null);
     const r = useRouter();
 
     const updateView = () => {
         if( props.children && props.children !== currentChild ) {
-            setCurrentChild(() => {
-                r.setParams({});
-                const baseURL = window.location.protocol.concat('//').concat(window.location.host);
-                const location = window.location.href;
-                for(const child of props.children as Array<any>) {
-                    const pattern = new URLPattern({pathname: child.props.path, baseURL});
-                    const compiled = pattern.exec(location)
-                    if( compiled ) {
+            const baseURL = window.location.protocol.concat('//').concat(window.location.host);
+            const location = window.location.href;
+            for(const child of props.children as Array<any>) {
+                const pattern = new URLPattern({pathname: child.props.path, baseURL});
+                const compiled = pattern.exec(location)
+                if( compiled ) {
+                    if( child !== currentChild ) {
                         r.setParams(compiled.pathname.groups);
-                        return child;
+                        setCurrentChild(child);
+                        break;
                     }
                 }
-
-                // TODO find default attribute on child
-                return null;
-            })
+            }
         }
     }
 
