@@ -1,6 +1,6 @@
 {
   "name": "@k8s-cloud-io/preact-router",
-  "version": "1.0.50",
+  "version": "1.0.52",
   "main": "dist/index.js",
   "source": "src/index.tsx",
   "types": "dist/index.d.ts",
@@ -9,6 +9,12 @@
     "build": "rm -rf dist && webpack --progress -c ./webpack.config.js",
     "build2": "rm -rf dist && parcel build",
     "deploy": "npm publish --access public"
+  },
+  "targets": {
+    "main": {
+      "optimize": true,
+      "sourceMap": false
+    }
   },
   "peerDependencies": {
     "classnames": "^2.3.2",

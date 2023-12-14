@@ -68,10 +68,6 @@ const RouteProvider = (props: PropsWithChildren) => {
         {
             currentChild
         }
-        {
-            !currentChild &&
-            props.children
-        }
     </>
 }
 export const Router = (props: any) => {
