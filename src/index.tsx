@@ -1,6 +1,6 @@
 import React from "react"
 import {BrowserHistory, createBrowserHistory} from "history";
-import {HTMLAttributes, PropsWithChildren, createContext} from "react";
+import {PropsWithChildren, createContext} from "react";
 import {useContext, useEffect, useState} from "react";
 import classnames from "classnames";
 import {URLPattern} from "urlpattern-polyfill";
@@ -31,17 +31,17 @@ export const useParams = () => {
     return r.params;
 }
 const RouteProvider = (props: PropsWithChildren) => {
-    const [children, setChildren] = useState(props?.children);
+    //const [children, setChildren] = useState(props?.children);
     const [currentChild, setCurrentChild] = useState(null);
     const r = useRouter();
 
     const updateView = () => {
-        if( children ) {
+        if( props.children && props.children !== currentChild ) {
             setCurrentChild(() => {
                 r.setParams({});
                 const baseURL = window.location.protocol.concat('//').concat(window.location.host);
                 const location = window.location.href;
-                for(const child of children as Array<any>) {
+                for(const child of props.children as Array<any>) {
                     const pattern = new URLPattern({pathname: child.props.path, baseURL});
                     const compiled = pattern.exec(location)
                     if( compiled ) {
@@ -56,7 +56,7 @@ const RouteProvider = (props: PropsWithChildren) => {
         }
     }
 
-    r.history.listen((loc)=> {
+    r.history.listen(()=> {
         updateView();
     })
 
@@ -69,7 +69,7 @@ const RouteProvider = (props: PropsWithChildren) => {
             currentChild
         }
         {
-            !children &&
+            !currentChild &&
             props.children
         }
     </>
