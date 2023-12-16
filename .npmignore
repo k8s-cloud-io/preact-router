@@ -1,4 +1,5 @@
 /.git*
+/.parcel-cache
 /.idea
 /src
 /node_modules

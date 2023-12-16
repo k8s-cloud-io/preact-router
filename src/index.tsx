@@ -1,24 +1,45 @@
-import React from "react"
-import {BrowserHistory, createBrowserHistory} from "history";
-import {PropsWithChildren, createContext} from "preact/compat";
-import {useContext, useEffect, useState} from "preact/compat";
+import React, {toChildArray} from "preact"
+import {createBrowserHistory, Update} from "history";
+import {PropsWithChildren, cloneElement, useCallback} from "preact/compat";
+import {useEffect} from "preact/compat";
+import {signal} from "@preact/signals";
 import classnames from "classnames";
 import {URLPattern} from "urlpattern-polyfill";
 
-type KeyValueMap = {
-    [key: string]: string;
+const baseURL = window.location.protocol.concat('//').concat(window.location.host);
+const history = createBrowserHistory();
+const listenerSignal = signal(null);
+const context = signal({
+    currentChild: null,
+    currentLocation: null,
+    params: null
+});
+
+const setCurrentChild = (child: any) => {
+    const {value} = context;
+    context.value = {
+        ...value,
+        currentChild: child
+    };
 }
-export const RouterContext = createContext<{
-    history: BrowserHistory,
-    params: KeyValueMap,
-    setParams: (p: KeyValueMap) => void
-}>(null);
-export const useRouter = () => {
-    return useContext(RouterContext);
+
+const setParams = (p: any) => {
+    const {value} = context;
+    context.value = {
+        ...value,
+        params: p
+    };
+}
+
+const setCurrentLocation = (loc: any) => {
+    const {value} = context;
+    context.value = {
+        ...value,
+        currentLocation: loc
+    };
 }
 export const useHistory = () => {
-    const r = useRouter();
-    return r.history;
+    return history;
 }
 export const useNavigate = () => {
     const h = useHistory();
@@ -27,54 +48,62 @@ export const useNavigate = () => {
     }
 }
 export const useParams = () => {
-    const r = useRouter();
-    return r.params;
+    const { value } = context;
+    return value.params;
 }
-const RouteProvider = (props: PropsWithChildren) => {
-    const [currentChild, setCurrentChild] = useState(null);
-    const r = useRouter();
 
-    const updateView = () => {
-        if( props.children && props.children !== currentChild ) {
-            const baseURL = window.location.protocol.concat('//').concat(window.location.host);
-            const location = window.location.href;
-            for(const child of props.children as Array<any>) {
+const useChild = () => {
+    const { value } = context;
+    return value.currentChild;
+}
+
+const RouterImpl = (props: PropsWithChildren) => {
+    const __currentChild = useChild();
+
+    const updateView = useCallback((newLocation: string, children: React.ComponentChildren) => {
+        if( children ) {
+            const location = `${baseURL}${newLocation}`;
+            const childList = toChildArray(children);
+            let found = false;
+            for(let i = 0; i < childList.length; i++) {
+                const child = childList[i] as any;
                 const pattern = new URLPattern({pathname: child.props.path, baseURL});
                 const compiled = pattern.exec(location)
-                if( compiled ) {
-                    if( child !== currentChild ) {
-                        r.setParams(compiled.pathname.groups);
-                        setCurrentChild(child);
-                        break;
-                    }
+                if( compiled && child.props.path !== __currentChild?.path) {
+                    found = true;
+                    const clone = cloneElement(child, {...child.props, params: compiled.pathname.groups});
+
+                    setParams(compiled.pathname.groups);
+                    setCurrentLocation(newLocation);
+                    setCurrentChild(clone);
+                    break;
                 }
             }
-        }
-    }
 
-    r.history.listen(()=> {
-        updateView();
-    })
+            if( !found ) {
+                setCurrentChild(null);
+            }
+        }
+    }, [])
 
     useEffect(() => {
-        updateView();
-    }, [window.location.href]);
-
-    return <>
-        {
-            currentChild
+        if( !listenerSignal.value ) {
+            listenerSignal.value = history.listen((location: Update) => {
+                updateView(location.location.pathname, props.children);
+            });
+            history.push(window.location.pathname);
         }
-    </>
-}
-export const Router = (props: any) => {
-    const history = createBrowserHistory();
-    const [params, setParams] = useState({})
-    return <RouterContext.Provider value={{history, params, setParams}}>
-        <RouteProvider>
+    }, [listenerSignal.value]);
+
+    return __currentChild;
+};
+
+export const Router = (props: PropsWithChildren) => {
+    return <RouterImpl>
             {props.children}
-        </RouteProvider>
-    </RouterContext.Provider>
+        </RouterImpl>
 }
+
 export const Link = (props: any) => {
     let className = classnames(props.className as string);
     const location = window.location.pathname;
