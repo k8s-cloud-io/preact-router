@@ -23,10 +23,6 @@ module.exports = [
             },
             resolve: {
                 extensions: ['.js', '.ts', '.tsx', '.mjs'],
-            },
-            externals: {
-                React: "preact/compat",
-                react: "preact/compat"
             }
         }
     }

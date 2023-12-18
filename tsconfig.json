@@ -5,15 +5,12 @@
     "target": "es2020",
     "noImplicitAny": false,
     "removeComments": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "declaration": true,
     "declarationDir": "./dist",
     "baseUrl": "./",
-    "paths": {
-      "react": ["./node_modules/preact/compat/"]
-    },
     "sourceMap": false
   }
 }
