@@ -1,6 +1,6 @@
 {
   "name": "@k8s-cloud-io/react-router",
-  "version": "1.0.138",
+  "version": "1.0.139",
   "main": "dist/index.js",
   "source": "src/index.tsx",
   "types": "dist/index.d.ts",

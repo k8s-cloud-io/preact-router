@@ -69,9 +69,11 @@ export const NavLink = (
         [],
     );
 
+    const active = window.location.pathname === props.to ? ' active' : '';
+
     return (
         <a
-            className={props.className}
+            className={`${props.className} ${active}`}
             href={props.to}
             onClick={(e) => onNavigate(e)}
         >
