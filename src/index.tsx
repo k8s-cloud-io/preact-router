@@ -1,5 +1,5 @@
 import { History, createBrowserHistory } from 'history';
-import React, {
+import React,{
     Children,
     PropsWithChildren,
     ReactNode,
@@ -57,11 +57,11 @@ export const useNavigate = () => {
 };
 
 export const NavLink = (
-    props: PropsWithChildren & { to: string; className?: string },
+    props: PropsWithChildren & { to: string; className?: string, exact?: boolean },
 ) => {
     const navigate = useNavigate();
     const onNavigate = useCallback(
-        (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        (event: any) => {
             event.stopPropagation();
             event.preventDefault();
             navigate(event.currentTarget.href);
@@ -69,11 +69,18 @@ export const NavLink = (
         [],
     );
 
-    const active = window.location.pathname === props.to ? ' active' : '';
+    const active = () => {
+        if( props.exact ) {
+            return window.location.pathname === props.to ? ' active' : '';
+        }
+
+        return window.location.pathname === props.to ||
+        window.location.pathname.startsWith(props.to)? ' active' : '';
+    }
 
     return (
         <a
-            className={`${props.className} ${active}`}
+            className={`${props.className} ${active()}`}
             href={props.to}
             onClick={(e) => onNavigate(e)}
         >
