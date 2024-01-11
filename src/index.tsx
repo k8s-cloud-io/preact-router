@@ -12,6 +12,7 @@ import React,{
 } from 'react';
 import { URLPattern } from 'urlpattern-polyfill';
 
+
 export const BrowserRouterContext = createContext<{
     currentChild: ReactNode | Element;
     setCurrentChild: (child: ReactNode | Element) => void;
@@ -25,13 +26,16 @@ export const BrowserRouter = (props: PropsWithChildren) => {
 
     history.listen((newLocation) => {
         const children = Children.toArray(props.children);
-        const location = `${baseURL}${newLocation.location.pathname}`;
+        const location = `${newLocation.location.pathname}`;
+        let found = false;
         Children.forEach(children, (child: any) => {
             const pattern = new URLPattern(child.props.path, baseURL);
-            const compiled = pattern.exec(location);
-            if (compiled) {
+            const compiled = pattern.exec(location, baseURL);
+            if (compiled && !found) {
                 const clone = cloneElement(child);
                 setCurrentChild(clone);
+                found = true;
+                return;
             }
         });
     });
